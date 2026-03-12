@@ -1,19 +1,11 @@
-import express from 'express';
-import reviewsRouter from './routes/reviews.js';
-import { initDB } from './models/review.js';
+import http from 'http';
 
-const app = express();
-app.use(express.json());
+const server = http.createServer((req, res) => {
+        res.writeHead(200, { 'Content-Type': 'text/plain' });
+        console.log("certo");
+        res.end('certo');
+});
 
-app.use('/reviews', reviewsRouter);
-
-const PORT = process.env.PORT || 3000;
-
-initDB()
-    .then(() => {
-        app.listen(PORT, () => console.log(`Servidor rodando na porta ${PORT}`));
-    })
-    .catch((err) => {
-        console.error('Erro inicializando DB', err);
-        process.exit(1);
-    });
+server.listen(3000, () => {
+        console.log('Servidor rodando na porta 3000');
+});
