@@ -9,6 +9,10 @@
 </head>
 
 <body>
+  <header style="position:fixed;right:18px;top:12px;z-index:60;">
+    <button id="login-btn" class="btn" style="padding:8px 14px;font-size:0.9rem;">Entrar</button>
+  </header>
+
 
   <div class="page active" id="home">
     <p class="brand">Plus Mídia</p>
@@ -16,8 +20,10 @@
       <span class="blue">COMO FOI SUA</span><br>EXPERIÊNCIA?
     </h1>
     <p class="tagline">Sua avaliação é fundamental para mantermos a excelência no atendimento e na qualidade</p>
-    <button class="btn" onclick="goTo(1)">AVALIE AQUI</button>
+    <button class="btn" onclick="startSurvey()">AVALIE AQUI</button>
   </div>
+
+  <!-- Tela de login removida; agora coletamos nome e telefone ao final -->
 
   <div class="page" id="p1">
     <p class="survey-logo">Plus Mídia</p>
@@ -121,15 +127,52 @@
       <span class="star" onclick="rate(5,5)">★</span>
     </div>
     <p class="star-label" id="label-5"></p>
-    <button class="btn" id="btn-5" disabled onclick="goTo(6)">ENVIAR AVALIAÇÃO</button>
+    <button class="btn" id="btn-5" disabled onclick="goTo(6)">PRÓXIMO</button>
   </div>
 
-
+  <!-- Página de comentário (opcional) -->
   <div class="page" id="p6">
+    <p class="survey-logo">Plus Mídia</p>
+    <h2>Comentário (opcional)</h2>
+    <p>Se quiser, deixe um comentário sobre sua experiência.</p>
+    <textarea id="final-comment" class="login-input" placeholder="Escreva um comentário (opcional)" style="min-height:120px;"></textarea>
+    <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:18px;">
+      <button class="btn" onclick="proceedToContact()">PRÓXIMO</button>
+      <button class="btn" onclick="goTo(5)">VOLTAR</button>
+    </div>
+  </div>
+
+  <!-- Página final: coleta nome e telefone obrigatórios antes de enviar -->
+  <div class="page" id="p7">
+    <p class="survey-logo">Plus Mídia</p>
+    <h2>Quase pronto</h2>
+    <p>Por favor, informe seu <strong>nome</strong> e <strong>número de telefone</strong> (obrigatórios).</p>
+    <input id="final-name" class="login-input" placeholder="Seu nome" required />
+    <input id="final-phone" class="login-input" placeholder="Número de telefone" required />
+    <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:18px;">
+      <button class="btn" onclick="submitSurvey()">ENVIAR AVALIAÇÃO</button>
+      <button class="btn" onclick="goTo(6)">VOLTAR</button>
+    </div>
+  </div>
+
+  <div class="page" id="p8">
     <div class="thanks-icon">🎉</div>
     <h2 class="thanks-title"><span class="blue">OBRIGADO</span> PELO<br>SEU FEEDBACK!</h2>
     <p class="thanks-sub">Sua avaliação nos ajuda a melhorar cada vez mais. Até a próxima!</p>
     <button class="btn" onclick="goTo(0)">VOLTAR AO INÍCIO</button>
+  </div>
+
+  <!-- Login modal -->
+  <div id="login-modal" style="display:none;position:fixed;inset:0;align-items:center;justify-content:center;background:rgba(0,0,0,0.6);z-index:80;">
+    <div class="login-card" style="position:relative;">
+      <h2>Entrar</h2>
+      <input id="login-name" class="login-input" placeholder="Seu nome" />
+      <input id="login-phone" class="login-input" placeholder="Número de telefone" />
+      <div style="display:flex;gap:8px;margin-top:6px;width:100%">
+        <button class="btn" onclick="doLogin()">Entrar</button>
+        <button class="btn" onclick="closeLoginModal()">Fechar</button>
+      </div>
+    </div>
   </div>
 
   <script src="script.js"></script>

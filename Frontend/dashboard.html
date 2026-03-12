@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Dashboard - Plus Mídia</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body style="padding:28px;">
+  <header style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
+    <h1 style="color:#2563eb;">Dashboard - Avaliações</h1>
+    <div>
+      <button id="logout-btn" class="btn">Logout</button>
+      <a href="index.html" class="btn" style="background:#111;margin-left:8px;">Voltar</a>
+    </div>
+  </header>
+
+  <section style="display:flex;gap:20px;flex-wrap:wrap;align-items:flex-start;">
+    <div style="flex:1;min-width:320px;max-width:640px;background:#071022;padding:18px;border-radius:12px;">
+      <canvas id="ratingsChart"></canvas>
+    </div>
+    <div style="flex:1;min-width:320px;max-width:720px;">
+      <div style="background:#071022;padding:12px;border-radius:12px;">
+        <h3 style="color:#fff;margin-bottom:8px;">Avaliações recentes</h3>
+        <table id="answers-table" style="width:100%;border-collapse:collapse;color:#fff;">
+          <thead style="text-align:left;color:#ccc;">
+            <tr><th>Nome</th><th>Telefone</th><th>Satisfação</th><th>Comentário</th><th>Data</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    async function loadData() {
+      try {
+        const res = await fetch('/answers');
+        const data = await res.json();
+        renderTable(data);
+        renderChart(data);
+      } catch (e) { console.error(e); alert('Erro ao carregar dados'); }
+    }
+    function renderTable(data){
+      const tbody = document.querySelector('#answers-table tbody'); tbody.innerHTML='';
+      data.slice().reverse().forEach(a=>{
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${a.name||''}</td><td>${a.phone||''}</td><td style="color:#2563eb">${labelFor(a.answers && a.answers[5])||''}</td><td>${a.comment||''}</td><td>${new Date(a.ts||0).toLocaleString()}</td>`;
+        tbody.appendChild(tr);
+      });
+    }
+    function labelFor(v){ return v==5? 'Excelente': v==4? 'Bom': v==3? 'Regular': v==2? 'Ruim': v==1? 'Péssimo':'' }
+    function renderChart(data){
+      const counts = {5:0,4:0,3:0,2:0,1:0};
+      data.forEach(a=>{ const v = a.answers && a.answers[5]; if (v && counts[v]!==undefined) counts[v]++; });
+      const ctx = document.getElementById('ratingsChart').getContext('2d');
+      new Chart(ctx, { type:'bar', data:{ labels:['Péssimo','Ruim','Regular','Bom','Excelente'], datasets:[{ label:'Quantidade', backgroundColor:['#ef4444','#f97316','#facc15','#60a5fa','#10b981'], data:[counts[1],counts[2],counts[3],counts[4],counts[5]] }] }, options:{indexAxis:'y'} });
+    }
+    document.getElementById('logout-btn').onclick = ()=>{ localStorage.removeItem('user'); window.location.href='index.html'; };
+    loadData();
+  </script>
+</body>
+</html>
