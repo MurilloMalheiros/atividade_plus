@@ -24,6 +24,18 @@ function startSurvey() {
   goTo(1);
 }
 
+function resetRatingsUI(){
+  // limpar estrelas, labels e botões de avanço para todas as perguntas (1..5)
+  for(let p=1;p<=5;p++){
+    const stars = document.querySelectorAll('#stars-' + p + ' .star');
+    stars.forEach(s=> s.classList.remove('selected'));
+    const lbl = document.getElementById('label-' + p);
+    if (lbl) lbl.textContent = '';
+    const btn = document.getElementById('btn-' + p);
+    if (btn) btn.disabled = true;
+  }
+}
+
 async function submitSurvey() {
   // se houver login salvo, usar ele
   let user = null;
@@ -31,6 +43,14 @@ async function submitSurvey() {
   let name = user && user.name ? user.name.trim() : document.getElementById('final-name').value.trim();
   let phone = user && user.phone ? user.phone.trim() : document.getElementById('final-phone').value.trim();
   // validar obrigatórios
+  // validar que todas as perguntas obrigatórias (1..5) foram respondidas
+  for (let i = 1; i <= 5; i++) {
+    if (!window.answers || !window.answers[i]) {
+      alert('Por favor responda todas as perguntas antes de enviar. Vá para a pergunta ' + i + '.');
+      goTo(i);
+      return;
+    }
+  }
   if (!name) { alert('Por favor, informe seu nome.'); return; }
   if (!phone) { alert('Por favor, informe seu número de telefone.'); return; }
   const payload = { answers: window.answers || {}, name: name, phone: phone, comment: window.comment || null };
@@ -46,6 +66,8 @@ async function submitSurvey() {
     // limpar estado e mostrar obrigado
     window.answers = {};
     window.comment = null;
+    // resetar UI de ratings para a próxima avaliação
+    resetRatingsUI();
     const c = document.getElementById('final-comment'); if (c) c.value = '';
     // se não estiver logado, limpar campos
     try { if (!JSON.parse(localStorage.getItem('user'))) { document.getElementById('final-name').value = ''; document.getElementById('final-phone').value = ''; } } catch(e){ document.getElementById('final-name').value = ''; document.getElementById('final-phone').value = ''; }

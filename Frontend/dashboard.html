@@ -18,45 +18,257 @@
 
   <section style="display:flex;gap:20px;flex-wrap:wrap;align-items:flex-start;">
     <div style="flex:1;min-width:320px;max-width:640px;background:#071022;padding:18px;border-radius:12px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;gap:12px;flex-wrap:wrap;">
+        <h3 style="color:#fff;margin:0;">Análise por pergunta</h3>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <label for="question-select" style="color:#ccc;font-size:14px;">Pergunta:</label>
+          <select id="question-select" style="padding:6px;border-radius:6px;background:#0b1220;color:#fff;border:1px solid #22313a;"></select>
+        </div>
+      </div>
       <canvas id="ratingsChart"></canvas>
+      <div style="height:18px"></div>
+      <div style="background:rgba(255,255,255,0.02);padding:10px;border-radius:8px;margin-top:6px;">
+        <h4 style="color:#fff;margin:0 0 8px 0;font-size:14px;">Média geral por pergunta</h4>
+        <canvas id="avgChart" style="max-height:320px;"></canvas>
+      </div>
     </div>
     <div style="flex:1;min-width:320px;max-width:720px;">
       <div style="background:#071022;padding:12px;border-radius:12px;">
-        <h3 style="color:#fff;margin-bottom:8px;">Avaliações recentes</h3>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;gap:12px;flex-wrap:wrap;">
+          <h3 style="color:#fff;margin:0;">Avaliações recentes</h3>
+          <button id="collapse-btn" style="background:#1f2937;color:#fff;border:0;padding:6px 10px;border-radius:8px;cursor:pointer;display:none;">VER MENOS</button>
+          <div style="display:flex;align-items:center;gap:8px;color:#ccc;">
+            <div style="font-size:13px;color:#9ca3af;">Total de avaliações</div>
+            <div id="total-count" style="background:#0b1220;padding:6px 10px;border-radius:8px;color:#10b981;font-weight:700;min-width:48px;text-align:center;">0</div>
+          </div>
+        </div>
         <table id="answers-table" style="width:100%;border-collapse:collapse;color:#fff;">
           <thead style="text-align:left;color:#ccc;">
             <tr><th>Nome</th><th>Telefone</th><th>Satisfação</th><th>Comentário</th><th>Data</th></tr>
           </thead>
           <tbody></tbody>
         </table>
+        <div style="display:flex;justify-content:center;margin-top:10px;">
+          <button id="load-more-btn" style="background:#1f2937;color:#fff;border:0;padding:8px 12px;border-radius:8px;cursor:pointer;">VER MAIS</button>
+        </div>
       </div>
     </div>
   </section>
 
+  <!-- Modal de detalhes -->
+  <div id="detail-modal" style="display:none;position:fixed;inset:0;align-items:center;justify-content:center;background:rgba(0,0,0,0.6);z-index:1200;padding:20px;">
+    <div style="background:#071022;color:#fff;border-radius:10px;max-width:720px;width:100%;padding:18px;box-shadow:0 8px 30px rgba(2,6,23,0.7);">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+        <h3 style="margin:0;color:#fff;font-size:16px;">Detalhes da Avaliação</h3>
+        <button onclick="closeDetails()" style="background:transparent;border:0;color:#9ca3af;cursor:pointer;font-size:18px;">✕</button>
+      </div>
+      <div style="display:flex;gap:20px;flex-wrap:wrap;margin-bottom:12px;">
+        <div style="flex:1;min-width:160px">
+          <div style="color:#9ca3af;font-size:12px">Nome</div>
+          <div id="d-name" style="font-weight:700;color:#fff">-</div>
+        </div>
+        <div style="flex:1;min-width:160px">
+          <div style="color:#9ca3af;font-size:12px">Telefone</div>
+          <div id="d-phone" style="font-weight:700;color:#fff">-</div>
+        </div>
+        <div style="flex:1;min-width:160px">
+          <div style="color:#9ca3af;font-size:12px">Data</div>
+          <div id="d-date" style="font-weight:700;color:#fff">-</div>
+        </div>
+      </div>
+      <div style="margin-bottom:12px;">
+        <div style="color:#9ca3af;font-size:12px;margin-bottom:6px">Comentário</div>
+        <div id="d-comment" style="background:#06121a;padding:10px;border-radius:8px;color:#e5e7eb;min-height:40px;white-space:pre-wrap;">-</div>
+      </div>
+      <div>
+        <div style="color:#9ca3af;font-size:12px;margin-bottom:6px">Notas por pergunta</div>
+        <div id="d-answers" style="background:#06121a;padding:8px;border-radius:8px;color:#e5e7eb;"></div>
+      </div>
+    </div>
+  </div>
+
   <script>
+    let allData = [];
+    let chartInstance = null;
+    let avgChartInstance = null;
+    const optionLabels = ['Péssimo','Ruim','Regular','Bom','Excelente'];
+    const optionColors = ['#ef4444','#f97316','#facc15','#60a5fa','#10b981'];
+
     async function loadData() {
       try {
         const res = await fetch('/answers');
         const data = await res.json();
-        renderTable(data);
-        renderChart(data);
+        allData = data || [];
+        populateQuestionSelect(allData);
+        renderTable(allData);
+        const firstQuestion = document.getElementById('question-select').value;
+        updateChartFor(firstQuestion);
+        renderAvgChart();
       } catch (e) { console.error(e); alert('Erro ao carregar dados'); }
     }
-    function renderTable(data){
+
+    function populateQuestionSelect(data){
+      const sel = document.getElementById('question-select'); sel.innerHTML='';
+      // coletar chaves de perguntas existentes
+      const keys = new Set();
+      data.forEach(d=>{ if (d.answers) Object.keys(d.answers).forEach(k=>keys.add(k)); });
+      const sorted = Array.from(keys).sort((a,b)=>Number(a)-Number(b));
+      if (sorted.length===0) {
+        const opt = document.createElement('option'); opt.value=''; opt.textContent='Nenhuma pergunta disponível'; sel.appendChild(opt); return;
+      }
+      sorted.forEach(k=>{ const opt = document.createElement('option'); opt.value = k; opt.textContent = 'Pergunta ' + k; sel.appendChild(opt); });
+      sel.onchange = ()=> updateChartFor(sel.value);
+    }
+
+    let displayedCount = 10;
+
+    function renderTable(data, reset = false){
+      if (reset) displayedCount = 10;
       const tbody = document.querySelector('#answers-table tbody'); tbody.innerHTML='';
-      data.slice().reverse().forEach(a=>{
+      const sel = document.getElementById('question-select');
+      const q = sel ? sel.value : '5';
+      const rows = data.slice().reverse();
+      const toShow = rows.slice(0, displayedCount);
+      toShow.forEach(a=>{
         const tr = document.createElement('tr');
-        tr.innerHTML = `<td>${a.name||''}</td><td>${a.phone||''}</td><td style="color:#2563eb">${labelFor(a.answers && a.answers[5])||''}</td><td>${a.comment||''}</td><td>${new Date(a.ts||0).toLocaleString()}</td>`;
+        const val = a.answers && a.answers[q];
+        tr.innerHTML = `<td>${a.name||''}</td><td>${a.phone||''}</td><td style="color:#2563eb">${labelFor(val)||''}</td><td>${(a.comment&&a.comment.length>60)? a.comment.slice(0,60)+'…': (a.comment||'')}</td><td>${new Date(a.ts||0).toLocaleString()}</td>`;
+        tr.style.cursor = 'pointer';
+        tr.onclick = ()=> showDetails(a);
         tbody.appendChild(tr);
       });
+      // controlar botão MAIS
+      const btn = document.getElementById('load-more-btn');
+      if (btn) {
+        if (rows.length > displayedCount) { btn.style.display = 'inline-block'; } else { btn.style.display = 'none'; }
+      }
+      // controlar botão Reduzir
+      const collapse = document.getElementById('collapse-btn');
+      if (collapse) {
+        if (displayedCount > 10) collapse.style.display = 'inline-block'; else collapse.style.display = 'none';
+      }
     }
+
+    function setTotalCount(){
+      const el = document.getElementById('total-count');
+      if (!el) return;
+      el.textContent = (allData && allData.length) ? allData.length : 0;
+    }
+
     function labelFor(v){ return v==5? 'Excelente': v==4? 'Bom': v==3? 'Regular': v==2? 'Ruim': v==1? 'Péssimo':'' }
-    function renderChart(data){
-      const counts = {5:0,4:0,3:0,2:0,1:0};
-      data.forEach(a=>{ const v = a.answers && a.answers[5]; if (v && counts[v]!==undefined) counts[v]++; });
+
+    function updateChartFor(questionId){
+      if (!questionId) return;
+      // contar respostas para a pergunta selecionada
+      const counts = {1:0,2:0,3:0,4:0,5:0};
+      let total = 0;
+      allData.forEach(a=>{ const v = a.answers && a.answers[questionId]; if (v && counts[v]!==undefined) { counts[v]++; total++; } });
+      const percentages = [1,2,3,4,5].map(i => total? Math.round((counts[i]/total)*100): 0);
+
       const ctx = document.getElementById('ratingsChart').getContext('2d');
-      new Chart(ctx, { type:'bar', data:{ labels:['Péssimo','Ruim','Regular','Bom','Excelente'], datasets:[{ label:'Quantidade', backgroundColor:['#ef4444','#f97316','#facc15','#60a5fa','#10b981'], data:[counts[1],counts[2],counts[3],counts[4],counts[5]] }] }, options:{indexAxis:'y'} });
+      const dataset = {
+        label: 'Percentual',
+        backgroundColor: optionColors,
+        data: percentages
+      };
+
+      const config = {
+        type: 'bar',
+        data: { labels: optionLabels, datasets: [dataset] },
+        options: {
+          scales: { y: { beginAtZero: true, max: 100, ticks: { callback: v => v + '%' } } },
+          plugins: { tooltip: { callbacks: { label: ctx => `${ctx.parsed.y}% — ${counts[ctx.dataIndex]} respostas` } } }
+        }
+      };
+
+      if (chartInstance) {
+        chartInstance.data = config.data;
+        chartInstance.options = config.options;
+        chartInstance.update();
+      } else {
+        chartInstance = new Chart(ctx, config);
+      }
+
+      // atualizar tabela também
+      renderTable(allData);
+      // atualizar gráfico de médias fixo
+      renderAvgChart();
+      // atualizar total
+      setTotalCount();
     }
+
+    function renderAvgChart(){
+      // calcular média por pergunta
+      const keys = new Set();
+      allData.forEach(d=>{ if (d.answers) Object.keys(d.answers).forEach(k=>keys.add(k)); });
+      const sorted = Array.from(keys).sort((a,b)=>Number(a)-Number(b));
+      if (sorted.length===0) return;
+      const labels = sorted.map(k=>'Pergunta ' + k);
+      const sums = {};
+      const counts = {};
+      sorted.forEach(k=>{ sums[k]=0; counts[k]=0; });
+      allData.forEach(d=>{
+        if (!d.answers) return;
+        sorted.forEach(k=>{
+          const v = d.answers[k]; if (v || v===0) { sums[k]+=Number(v||0); counts[k]++; }
+        });
+      });
+      const averages = sorted.map(k=> counts[k]? +(sums[k]/counts[k]).toFixed(2) : 0);
+
+      const ctx = document.getElementById('avgChart').getContext('2d');
+      const cfg = {
+        type: 'bar',
+        data: { labels: labels, datasets: [{ label: 'Média (1-5)', data: averages, backgroundColor: '#60a5fa' }] },
+        options: {
+          indexAxis: 'y',
+          scales: { x: { min: 0, max: 5, ticks: { stepSize: 1 } } },
+          plugins: { tooltip: { callbacks: { label: ctx => `Média: ${ctx.parsed.x}` } } }
+        }
+      };
+
+      if (avgChartInstance) {
+        avgChartInstance.data = cfg.data;
+        avgChartInstance.options = cfg.options;
+        avgChartInstance.update();
+      } else {
+        avgChartInstance = new Chart(ctx, cfg);
+      }
+    }
+
+    // mostra modal com detalhes completos da avaliação
+    function showDetails(entry){
+      const modal = document.getElementById('detail-modal');
+      if (!modal) return;
+      // preencher campos
+      document.getElementById('d-name').textContent = entry.name || '-';
+      document.getElementById('d-phone').textContent = entry.phone || '-';
+      document.getElementById('d-date').textContent = entry.ts ? new Date(entry.ts).toLocaleString() : '-';
+      document.getElementById('d-comment').textContent = entry.comment || '-';
+      const list = document.getElementById('d-answers'); list.innerHTML = '';
+      const keys = entry.answers ? Object.keys(entry.answers).sort((a,b)=>Number(a)-Number(b)) : [];
+      if (keys.length===0) {
+        const li = document.createElement('div'); li.textContent = 'Sem respostas.'; list.appendChild(li);
+      } else {
+        keys.forEach(k=>{
+          const v = entry.answers[k];
+          const row = document.createElement('div');
+          row.style.display='flex'; row.style.justifyContent='space-between'; row.style.padding='6px 0'; row.style.borderBottom='1px solid rgba(255,255,255,0.03)';
+          const left = document.createElement('div'); left.textContent = 'Pergunta ' + k;
+          const right = document.createElement('div'); right.textContent = (v ? labelFor(v) + ' ('+v+')' : '-'); right.style.color='#60a5fa';
+          row.appendChild(left); row.appendChild(right); list.appendChild(row);
+        });
+      }
+      modal.style.display = 'flex';
+    }
+
+    function closeDetails(){ document.getElementById('detail-modal').style.display = 'none'; }
+    // carregar mais itens na tabela
+    document.addEventListener('DOMContentLoaded', ()=>{
+      const more = document.getElementById('load-more-btn');
+      if (more) more.onclick = ()=>{ displayedCount += 10; renderTable(allData); };
+      const collapse = document.getElementById('collapse-btn');
+      if (collapse) collapse.onclick = ()=>{ displayedCount = 10; renderTable(allData, true); setTotalCount(); collapse.style.display = 'none'; };
+    });
     document.getElementById('logout-btn').onclick = ()=>{ localStorage.removeItem('user'); window.location.href='index.html'; };
     loadData();
   </script>
