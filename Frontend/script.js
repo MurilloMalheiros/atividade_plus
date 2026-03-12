@@ -131,4 +131,3 @@ function updateLoginUI() {
 document.addEventListener('DOMContentLoaded', () => { document.getElementById('login-btn').onclick = openLoginModal; updateLoginUI(); });
 
 
-
