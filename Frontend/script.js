@@ -128,6 +128,10 @@ function updateLoginUI() {
 }
 
 // inicializar UI
-document.addEventListener('DOMContentLoaded', () => { document.getElementById('login-btn').onclick = openLoginModal; updateLoginUI(); });
+document.addEventListener('DOMContentLoaded', () => {
+  const loginBtn = document.getElementById('login-btn');
+  if (loginBtn) loginBtn.onclick = openLoginModal;
+  updateLoginUI();
+});
 
 

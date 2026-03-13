@@ -9,21 +9,17 @@
 </head>
 
 <body>
-  <header style="position:fixed;right:18px;top:12px;z-index:60;">
-    <button id="login-btn" class="btn" style="padding:8px 14px;font-size:0.9rem;">Entrar</button>
-  </header>
-
 
   <div class="page active" id="home">
     <p class="brand">Plus Mídia</p>
     <h1 class="headline">
       <span class="blue">COMO FOI SUA</span><br>EXPERIÊNCIA?
     </h1>
-    <p class="tagline">Sua avaliação é fundamental para mantermos a excelência no atendimento e na qualidade</p>
-    <button class="btn" onclick="startSurvey()">AVALIE AQUI</button>
-  </div>
 
-  <!-- Tela de login removida; agora coletamos nome e telefone ao final -->
+
+    <p class="tagline">Sua avaliação é fundamental para mantermos a excelência no atendimento e na qualidade</p>
+    <button class="btn" onclick="goTo(1)">AVALIE AQUI</button>
+  </div>
 
   <div class="page" id="p1">
     <p class="survey-logo">Plus Mídia</p>
@@ -43,10 +39,7 @@
       <span class="star" onclick="rate(1,5)">★</span>
     </div>
     <p class="star-label" id="label-1"></p>
-    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
-      <button class="btn" onclick="goTo(0)">VOLTAR</button>
-      <button class="btn" id="btn-1" disabled onclick="goTo(2)">AVANÇAR</button>
-    </div>
+    <button class="btn" id="btn-1" disabled onclick="goTo(2)">AVANÇAR</button>
   </div>
 
   <div class="page" id="p2">
@@ -67,10 +60,7 @@
       <span class="star" onclick="rate(2,5)">★</span>
     </div>
     <p class="star-label" id="label-2"></p>
-    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
-      <button class="btn" onclick="goTo(1)">VOLTAR</button>
-      <button class="btn" id="btn-2" disabled onclick="goTo(3)">AVANÇAR</button>
-    </div>
+    <button class="btn" id="btn-2" disabled onclick="goTo(3)">AVANÇAR</button>
   </div>
 
   <div class="page" id="p3">
@@ -91,10 +81,7 @@
       <span class="star" onclick="rate(3,5)">★</span>
     </div>
     <p class="star-label" id="label-3"></p>
-    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
-      <button class="btn" onclick="goTo(2)">VOLTAR</button>
-      <button class="btn" id="btn-3" disabled onclick="goTo(4)">AVANÇAR</button>
-    </div>
+    <button class="btn" id="btn-3" disabled onclick="goTo(4)">AVANÇAR</button>
   </div>
 
   <div class="page" id="p4">
@@ -106,23 +93,22 @@
       <div class="progress-dot active"></div>
       <div class="progress-dot"></div>
     </div>
-    <p class="question">Como você avalia a limpeza e o ambiente do restaurante?</p>
-    <div class="stars" id="stars-4">
-      <span class="star" onclick="rate(4,1)">★</span>
-      <span class="star" onclick="rate(4,2)">★</span>
-      <span class="star" onclick="rate(4,3)">★</span>
-      <span class="star" onclick="rate(4,4)">★</span>
-      <span class="star" onclick="rate(4,5)">★</span>
-    </div>
-    <p class="star-label" id="label-4"></p>
-    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
-      <button class="btn" onclick="goTo(3)">VOLTAR</button>
-      <button class="btn" id="btn-4" disabled onclick="goTo(5)">AVANÇAR</button>
-    </div>
-  </div>
+    
+    <p class="question">Deseja deixar algum comentário sobre sua experiência? (opcional)</p>
 
-  <div class="page" id="p5">
-    <p class="survey-logo">Plus Mídia</p>
+<div class="feedback-box">
+  <textarea 
+    class="feedback-input"
+    placeholder="Escreva aqui sua opinião ou sugestão..."
+  ></textarea>
+</div>
+
+<button class="btn" onclick="goTo(5)">AVANÇAR</button>
+</div>
+
+<div class="page" id="p5">
+    
+  <p class="survey-logo">Plus Mídia</p>
     <div class="progress">
       <div class="progress-dot done"></div>
       <div class="progress-dot done"></div>
@@ -130,64 +116,37 @@
       <div class="progress-dot done"></div>
       <div class="progress-dot active"></div>
     </div>
-    <p class="question">De modo geral, qual sua satisfação com o restaurante?</p>
-    <div class="stars" id="stars-5">
-      <span class="star" onclick="rate(5,1)">★</span>
-      <span class="star" onclick="rate(5,2)">★</span>
-      <span class="star" onclick="rate(5,3)">★</span>
-      <span class="star" onclick="rate(5,4)">★</span>
-      <span class="star" onclick="rate(5,5)">★</span>
-    </div>
-    <p class="star-label" id="label-5"></p>
-    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
-      <button class="btn" onclick="goTo(4)">VOLTAR</button>
-      <button class="btn" id="btn-5" disabled onclick="goTo(6)">PRÓXIMO</button>
-    </div>
-  </div>
+    
+ <p class="question">Antes de enviar sua avaliação, preencha seu nome e telefone.</p>
 
-  <!-- Página de comentário (opcional) -->
+<div class="contact-box">
+
+  <input 
+    type="text" 
+    class="contact-input"
+    placeholder="Seu nome"
+  >
+
+  <input 
+  type="tel"
+  class="contact-input"
+  placeholder="Telefone (DDD + número)"
+  pattern="[0-9]{10,11}"
+  maxlength="11"
+  required
+>
+
+</div>
+
+<button class="btn" onclick="goTo(6)">ENVIAR AVALIAÇÃO</button>
+    </div>
+
+
   <div class="page" id="p6">
-    <p class="survey-logo">Plus Mídia</p>
-    <h2>Comentário (opcional)</h2>
-    <p>Se quiser, deixe um comentário sobre sua experiência.</p>
-    <textarea id="final-comment" class="login-input" placeholder="Escreva um comentário (opcional)" style="min-height:120px;"></textarea>
-    <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:18px;">
-      <button class="btn" onclick="proceedToContact()">PRÓXIMO</button>
-      <button class="btn" onclick="goTo(5)">VOLTAR</button>
-    </div>
-  </div>
-
-  <!-- Página final: coleta nome e telefone obrigatórios antes de enviar -->
-  <div class="page" id="p7">
-    <p class="survey-logo">Plus Mídia</p>
-    <h2>Quase pronto</h2>
-    <p>Por favor, informe seu <strong>nome</strong> e <strong>número de telefone</strong> (obrigatórios).</p>
-    <input id="final-name" class="login-input" placeholder="Seu nome" required />
-    <input id="final-phone" class="login-input" placeholder="Número de telefone" required />
-    <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:18px;">
-      <button class="btn" onclick="submitSurvey()">ENVIAR AVALIAÇÃO</button>
-      <button class="btn" onclick="goTo(6)">VOLTAR</button>
-    </div>
-  </div>
-
-  <div class="page" id="p8">
     <div class="thanks-icon">🎉</div>
     <h2 class="thanks-title"><span class="blue">OBRIGADO</span> PELO<br>SEU FEEDBACK!</h2>
     <p class="thanks-sub">Sua avaliação nos ajuda a melhorar cada vez mais. Até a próxima!</p>
     <button class="btn" onclick="goTo(0)">VOLTAR AO INÍCIO</button>
-  </div>
-
-  <!-- Login modal -->
-  <div id="login-modal" style="display:none;position:fixed;inset:0;align-items:center;justify-content:center;background:rgba(0,0,0,0.6);z-index:80;">
-    <div class="login-card" style="position:relative;">
-      <h2>Entrar</h2>
-      <input id="login-name" class="login-input" placeholder="Seu nome" />
-      <input id="login-phone" class="login-input" placeholder="Número de telefone" />
-      <div style="display:flex;gap:8px;margin-top:6px;width:100%">
-        <button class="btn" onclick="doLogin()">Entrar</button>
-        <button class="btn" onclick="closeLoginModal()">Fechar</button>
-      </div>
-    </div>
   </div>
 
   <script src="script.js"></script>
