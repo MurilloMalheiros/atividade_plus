@@ -21,7 +21,11 @@
   },
   "homepage": "https://github.com/MurilloMalheiros/atividade_plus#readme",
   "dependencies": {
+    "chartjs-node-canvas": "^5.0.0",
     "cors": "^2.8.6",
-    "express": "^5.2.1"
+    "express": "^5.2.1",
+    "handlebars": "^4.7.8",
+    "puppeteer": "^24.39.1",
+    "sentiment": "^5.0.2"
   }
 }
