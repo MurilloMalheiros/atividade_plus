@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<!--
+  Tela de autenticacao do painel.
+  Contem duas abas: login e criacao de conta de restaurante.
+-->
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Plus Midia - Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="login.css" />
+</head>
+<body class="auth-body">
+<main class="auth-shell">
+    <section class="auth-brand">
+        <img src="./pluslogo - Copia.svg" alt="Plus Midia" class="auth-logo">
+        <h1>Painel Plus Midia</h1>
+        <p>Acesse seu dashboard para acompanhar resultados, clientes e operacao.</p>
+        <div class="auth-admin-tip">
+            <strong>Acesso admin:</strong>
+            <span>Email: plusmidia@gamil.com</span>
+            <span>Senha: plusmidia1234</span>
+        </div>
+    </section>
+
+    <section class="auth-card">
+        <div class="auth-tabs">
+            <button type="button" class="auth-tab-btn active" data-auth-tab="login">Entrar</button>
+            <button type="button" class="auth-tab-btn" data-auth-tab="register">Criar conta</button>
+        </div>
+
+        <form id="login-form" class="auth-form">
+            <label for="login-email">Email</label>
+            <input id="login-email" type="email" placeholder="seu@email.com" required>
+
+            <label for="login-password">Senha</label>
+            <input id="login-password" type="password" placeholder="Sua senha" required>
+
+            <button type="submit" class="auth-btn">Entrar no painel</button>
+            <p id="login-error" class="auth-error"></p>
+        </form>
+
+        <form id="register-form" class="auth-form" hidden>
+            <label for="register-restaurant">Nome do restaurante</label>
+            <input id="register-restaurant" placeholder="Ex.: Restaurante Plus" required>
+
+            <label for="register-owner">Nome do responsavel</label>
+            <input id="register-owner" placeholder="Ex.: Maria Silva" required>
+
+            <label for="register-email">Email</label>
+            <input id="register-email" type="email" placeholder="contato@restaurante.com" required>
+
+            <label for="register-password">Senha</label>
+            <input id="register-password" type="password" placeholder="Crie uma senha" required>
+
+            <label for="register-password-confirm">Confirmar senha</label>
+            <input id="register-password-confirm" type="password" placeholder="Repita a senha" required>
+
+            <button type="submit" class="auth-btn">Criar conta</button>
+            <p id="register-error" class="auth-error"></p>
+        </form>
+    </section>
+</main>
+
+<script src="login.js"></script>
+</body>
+</html>

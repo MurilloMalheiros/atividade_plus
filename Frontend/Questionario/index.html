@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<!--
+  Questionario principal conectado ao backend (/answers).
+  Fluxo em etapas com perguntas dinamicas e envio final de avaliacao.
+-->
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Plus Mídia</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<div class="drawer" id="drawer">
+    <div class="drawer-head">
+        <img src="logoplus.svg" alt="Plus Mídia" class="drawer-logo-img">
+        <button class="drawer-close" onclick="toggleDrawer()">&#x2715;</button>
+    </div>
+
+    <nav class="drawer-nav">
+        <div class="nav-item nav-has-sub" onclick="toggleSub(this)">
+            <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="16" height="11" rx="2"/><line x1="7" y1="18" x2="13" y2="18"/><line x1="10" y1="14" x2="10" y2="18"/></svg>
+            <span class="nav-label">Visão Geral</span>
+            <svg class="chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="4 6 8 10 12 6"/></svg>
+        </div>
+
+        <div class="submenu">
+            <a class="sub-item" href="/site/index.html" target="_blank" rel="noopener noreferrer">Painel</a>
+        </div>
+    </nav>
+</div>
+
+<div class="page active" id="home">
+    <img src="logoplus.svg" class="brand-logo" alt="Plus Mídia">
+    <h1 class="headline">
+        <span class="blue">COMO FOI SUA</span><br>EXPERIÊNCIA?
+    </h1>
+    <p class="tagline">Sua avaliação é fundamental para mantermos a excelência no atendimento e na qualidade.</p>
+    <button class="btn" onclick="goTo(1)">AVALIE AQUI</button>
+</div>
+
+<div class="page" id="p1">
+    <img src="logoplus.svg" class="brand-logo" alt="Plus Mídia">
+    <div class="progress">
+        <div class="progress-dot active"></div>
+        <div class="progress-dot"></div>
+        <div class="progress-dot"></div>
+        <div class="progress-dot"></div>
+        <div class="progress-dot"></div>
+    </div>
+    <p class="question">Como você avalia a qualidade da comida?</p>
+    <div class="stars" id="stars-1">
+        <span class="star" onclick="rate(1,1)">&#9733;</span>
+        <span class="star" onclick="rate(1,2)">&#9733;</span>
+        <span class="star" onclick="rate(1,3)">&#9733;</span>
+        <span class="star" onclick="rate(1,4)">&#9733;</span>
+        <span class="star" onclick="rate(1,5)">&#9733;</span>
+    </div>
+    <p class="star-label" id="label-1"></p>
+    <div class="btn-group">
+        <button class="btn-back" onclick="goTo(0)">VOLTAR</button>
+        <button class="btn" id="btn-1" disabled onclick="goTo(2)">AVANÇAR</button>
+    </div>
+</div>
+
+<div class="page" id="p2">
+    <img src="logoplus.svg" class="brand-logo" alt="Plus Mídia">
+    <div class="progress">
+        <div class="progress-dot done"></div>
+        <div class="progress-dot active"></div>
+        <div class="progress-dot"></div>
+        <div class="progress-dot"></div>
+        <div class="progress-dot"></div>
+    </div>
+    <p class="question">Como você avalia o atendimento da equipe?</p>
+    <div class="stars" id="stars-2">
+        <span class="star" onclick="rate(2,1)">&#9733;</span>
+        <span class="star" onclick="rate(2,2)">&#9733;</span>
+        <span class="star" onclick="rate(2,3)">&#9733;</span>
+        <span class="star" onclick="rate(2,4)">&#9733;</span>
+        <span class="star" onclick="rate(2,5)">&#9733;</span>
+    </div>
+    <p class="star-label" id="label-2"></p>
+    <div class="waiter-box">
+        <input id="waiter-name" type="text" class="contact-input" placeholder="Nome do garçom que atendeu (opcional)">
+        <input id="waiter-service-score" type="number" min="0" max="5" step="1" class="contact-input" placeholder="Nota do atendimento do garçom (0 a 5, opcional)">
+    </div>
+    <div class="btn-group">
+        <button class="btn-back" onclick="goTo(1)">VOLTAR</button>
+        <button class="btn" id="btn-2" disabled onclick="goTo(3)">AVANÇAR</button>
+    </div>
+</div>
+
+<div class="page" id="p3">
+    <img src="logoplus.svg" class="brand-logo" alt="Plus Mídia">
+    <div class="progress">
+        <div class="progress-dot done"></div>
+        <div class="progress-dot done"></div>
+        <div class="progress-dot active"></div>
+        <div class="progress-dot"></div>
+        <div class="progress-dot"></div>
+    </div>
+    <p class="question">Como você avalia o tempo de espera pelo pedido?</p>
+    <div class="stars" id="stars-3">
+        <span class="star" onclick="rate(3,1)">&#9733;</span>
+        <span class="star" onclick="rate(3,2)">&#9733;</span>
+        <span class="star" onclick="rate(3,3)">&#9733;</span>
+        <span class="star" onclick="rate(3,4)">&#9733;</span>
+        <span class="star" onclick="rate(3,5)">&#9733;</span>
+    </div>
+    <p class="star-label" id="label-3"></p>
+    <div class="btn-group">
+        <button class="btn-back" onclick="goTo(2)">VOLTAR</button>
+        <button class="btn" id="btn-3" disabled onclick="goTo(4)">AVANÇAR</button>
+    </div>
+</div>
+
+<div class="page" id="p4">
+    <img src="logoplus.svg" class="brand-logo" alt="Plus Mídia">
+    <div class="progress">
+        <div class="progress-dot done"></div>
+        <div class="progress-dot done"></div>
+        <div class="progress-dot done"></div>
+        <div class="progress-dot active"></div>
+        <div class="progress-dot"></div>
+    </div>
+    <p class="question">Deseja deixar algum comentário sobre sua experiência? (opcional)</p>
+    <div class="feedback-box">
+        <textarea id="comment" class="feedback-input" placeholder="Escreva aqui sua opinião ou sugestão..."></textarea>
+    </div>
+    <div class="btn-group">
+        <button class="btn-back" onclick="goTo(3)">VOLTAR</button>
+        <button class="btn" onclick="goTo(5)">AVANÇAR</button>
+    </div>
+</div>
+
+<div class="page" id="p5">
+    <img src="logoplus.svg" class="brand-logo" alt="Plus Mídia">
+    <div class="progress">
+        <div class="progress-dot done"></div>
+        <div class="progress-dot done"></div>
+        <div class="progress-dot done"></div>
+        <div class="progress-dot done"></div>
+        <div class="progress-dot active"></div>
+    </div>
+    <p class="question">Antes de enviar sua avaliação, preencha seu nome e telefone.</p>
+    <div class="contact-box">
+        <input id="name" type="text" class="contact-input" placeholder="Seu nome">
+        <input id="phone" type="tel" class="contact-input" placeholder="Telefone (DDD + número)" pattern="[0-9]{10,11}" maxlength="11" required>
+    </div>
+    <p id="form-error" class="star-label"></p>
+    <div class="btn-group">
+        <button class="btn-back" onclick="goTo(4)">VOLTAR</button>
+        <button id="submit-button" class="btn" onclick="submitEvaluation()">ENVIAR AVALIAÇÃO</button>
+    </div>
+</div>
+
+<div class="page" id="p6">
+    <img src="logoplus.svg" class="brand-logo" alt="Plus Mídia">
+    <h2 class="thanks-title"><span class="blue">OBRIGADO</span> PELO<br>SEU FEEDBACK!</h2>
+    <p class="thanks-sub">Sua avaliação nos ajuda a melhorar cada vez mais. Até a próxima.</p>
+    <button class="btn" onclick="goTo(0)">VOLTAR AO INICIO</button>
+</div>
+
+<script src="script.js"></script>
+
+</body>
+</html>
